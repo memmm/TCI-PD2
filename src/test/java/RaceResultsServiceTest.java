@@ -1,6 +1,7 @@
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -14,8 +15,12 @@ public class RaceResultsServiceTest {
 
     private RaceResultsService raceResults = new RaceResultsService();
     private Message message = mock(Message.class);
+    private Message message2 = mock(Message.class);
+    private String MSG_CONTENT = "I watched C-beams glitter in the dark near the Tannhäuser Gate. All those moments will be lost in time, like tears in rain.";
+    private Date MSG_DATE = new Date();
     private Client clientA = mock(Client.class, "clientA");
     private Client clientB = mock(Client.class, "clientB");
+    private MessageLog log = mock(MessageLog.class);
 
     /**
      * Example from the book (pages 80-84)
@@ -64,7 +69,7 @@ public class RaceResultsServiceTest {
      * Example from the book (pages 80-84)
      * */
     @Test
-    public void unsubscribedClientShouldNotReceiveMessages() {
+    public void unsubscribedClient_ShouldNotReceiveMessages() {
         raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
         raceResults.removeSubscriber(clientA, raceResults.getMessagingLists().get(0));
         raceResults.send(message, raceResults.getMessagingLists().get(0));
@@ -80,7 +85,6 @@ public class RaceResultsServiceTest {
      */
     @Test
     public void SUT_ShouldReturnMoreThanZeroLists() {
-
         Assert.assertNotSame(0,raceResults.getMessagingLists().size());
     }
 
@@ -97,7 +101,9 @@ public class RaceResultsServiceTest {
     // Indirect output (test spy)
     @Test
     public void subscriber_AfterSubscribeToSelectedCategory_ShouldReceiveOnlyRelevantMessage() {
-
+        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
+        raceResults.send(message, raceResults.getMessagingLists().get(1));
+        verify(clientA, never()).receive(message);
     }
 
     /**
@@ -105,7 +111,12 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void subscriber_WhenSubscribedToMultipleCategories_ShouldReceiveMultipleMessages() {
-
+        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
+        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(1));
+        raceResults.send(message, raceResults.getMessagingLists().get(0));
+        raceResults.send(message2, raceResults.getMessagingLists().get(1));
+        verify(clientA).receive(message);
+        verify(clientA).receive(message);
     }
 
     /* Each message sent by RaceResultsService should be logged. Introduce a logging DOC, and make
@@ -117,7 +128,10 @@ public class RaceResultsServiceTest {
      */
     @Test
     public void logger_WhenMessageIsSent_ShouldLog() {
-
+        when(message.getText()).then(MSG_CONTENT);
+        when(message.getDate()).then(MSG_DATE);
+        raceResults.send(message, raceResults.getMessagingLists().get(0));
+        verify(log).log(MSG_CONTENT, MSG_DATE);
     }
 
     /* In the tests implemented so far, RaceResultsService sends only one message. This is unrealistic!
