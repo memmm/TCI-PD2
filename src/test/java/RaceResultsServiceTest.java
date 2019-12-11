@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -98,13 +99,34 @@ public class RaceResultsServiceTest {
         Assert.assertThat(list, hasItem(clientA));
     }
 
-    // Indirect output (test spy)
+    /**
+     * Indirect output (test spy)
+    */
     @Test
     public void subscriber_AfterSubscribeToSelectedCategory_ShouldReceiveOnlyRelevantMessage() {
         raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
         raceResults.send(message, raceResults.getMessagingLists().get(1));
         verify(clientA, never()).receive(message);
     }
+
+    /* Each message sent by RaceResultsService should be logged. Introduce a logging DOC, and make
+      sure that the date and text of each message is logged. Do not implement the logging mechanism:
+      concentrate on the interactions between the service and its collaborator */
+
+    /**
+     * Indirect output (stub) - SUT calls Message's getText() and getDate() getters and passes it to Logger's log() (Indirect input)
+     */
+    @Test
+    public void logger_WhenMessageIsSent_ShouldLog() {
+        when(message.getText()).thenReturn(MSG_CONTENT);
+        when(message.getDate()).thenReturn(MSG_DATE);
+        raceResults.send(message, raceResults.getMessagingLists().get(0));
+        verify(log).log(MSG_CONTENT, MSG_DATE);
+    }
+
+
+    /* In the tests implemented so far, RaceResultsService sends only one message. This is unrealistic!
+       Enhance the tests to ensure that subscribers will receive any number of sent messages. */
 
     /**
      * Indirect output
@@ -119,25 +141,19 @@ public class RaceResultsServiceTest {
         verify(clientA).receive(message);
     }
 
-    /* Each message sent by RaceResultsService should be logged. Introduce a logging DOC, and make
-      sure that the date and text of each message is logged. Do not implement the logging mechanism:
-      concentrate on the interactions between the service and its collaborator */
-
-    /**
-     * Indirect output (stub) - SUT calls Message's getText() and getDate() getters and passes it to Logger's log() (Indirect input)
-     */
-    @Test
-    public void logger_WhenMessageIsSent_ShouldLog() {
-        when(message.getText()).then(MSG_CONTENT);
-        when(message.getDate()).then(MSG_DATE);
-        raceResults.send(message, raceResults.getMessagingLists().get(0));
-        verify(log).log(MSG_CONTENT, MSG_DATE);
-    }
-
-    /* In the tests implemented so far, RaceResultsService sends only one message. This is unrealistic!
-       Enhance the tests to ensure that subscribers will receive any number of sent messages. */
-
     /* What should happen if a client that is not subscribed tries to unsubscribe? Make up your mind about
        it, write a test which verifies this behaviour, and make RaceResultsService behave accordingly.*/
+
+    /**
+     * Dummy, static test -We assert that the number of clients in the list is the same as it was before the
+     * unnecessary unsubscription.
+     * */
+    @Test
+    public void notASubscriber_TriesToSubscribe_NothingShouldHappen() {
+        int memberNo = raceResults.getMessagingLists().get(0).size();
+        raceResults.removeSubscriber(clientA, raceResults.getMessagingLists().get(0));
+        Assert.assertSame(memberNo, raceResults.getMessagingLists().get(0));
+
+    }
 
 }
