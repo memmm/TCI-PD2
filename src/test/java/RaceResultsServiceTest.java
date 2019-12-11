@@ -13,22 +13,22 @@ import static org.hamcrest.CoreMatchers.hasItem;
 
 public class RaceResultsServiceTest {
 
-
-    private RaceResultsService raceResults = new RaceResultsService();
+    private MessageLog log = mock(MessageLog.class);
+    private RaceResultsService raceResults = new RaceResultsService(log);
     private Message message = mock(Message.class);
     private Message message2 = mock(Message.class);
     private String MSG_CONTENT = "I watched C-beams glitter in the dark near the Tannhäuser Gate. All those moments will be lost in time, like tears in rain.";
     private Date MSG_DATE = new Date();
     private Client clientA = mock(Client.class, "clientA");
     private Client clientB = mock(Client.class, "clientB");
-    private MessageLog log = mock(MessageLog.class);
+
 
     /**
      * Example from the book (pages 80-84)
      * */
     @Test
     public void notSubscribedClient_ShouldNotReceiveMessage() {
-        raceResults.send(message, raceResults.getMessagingLists().get(0));
+        raceResults.send(message, raceResults.getList(0));
         verify(clientA, never()).receive(message);
         verify(clientB, never()).receive(message);
     }
@@ -38,8 +38,9 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void subscribedClient_ShouldReceiveMessage() {
-        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
-        raceResults.send(message, raceResults.getMessagingLists().get(0));
+        when(clientA.getAge()).thenReturn(20);
+        raceResults.addSubscriber(clientA, raceResults.getList(0));
+        raceResults.send(message, raceResults.getList(0));
         verify(clientA).receive(message);
     }
 
@@ -48,6 +49,8 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void allSubscribedClients_ShouldReceiveMessages() {
+        when(clientA.getAge()).thenReturn(20);
+        when(clientB.getAge()).thenReturn(32);
         raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
         raceResults.addSubscriber(clientB, raceResults.getMessagingLists().get(0));
         raceResults.send(message, raceResults.getMessagingLists().get(0));
@@ -60,6 +63,7 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void multiSubscriber_shouldReceiveOnlyOneMessage() {
+        when(clientA.getAge()).thenReturn(20);
         raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
         raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
         raceResults.send(message, raceResults.getMessagingLists().get(0));
@@ -71,6 +75,7 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void unsubscribedClient_ShouldNotReceiveMessages() {
+        when(clientA.getAge()).thenReturn(20);
         raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
         raceResults.removeSubscriber(clientA, raceResults.getMessagingLists().get(0));
         raceResults.send(message, raceResults.getMessagingLists().get(0));
@@ -94,6 +99,7 @@ public class RaceResultsServiceTest {
      */
     @Test
     public void subscriber_AfterSubscribeToSelectedCategory_ShouldBeOnList() {
+        when(clientA.getAge()).thenReturn(20);
         HashSet<Client> list = raceResults.getMessagingLists().get(0);
         raceResults.addSubscriber(clientA, list);
         Assert.assertThat(list, hasItem(clientA));
@@ -104,6 +110,7 @@ public class RaceResultsServiceTest {
     */
     @Test
     public void subscriber_AfterSubscribeToSelectedCategory_ShouldReceiveOnlyRelevantMessage() {
+        when(clientA.getAge()).thenReturn(20);
         raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
         raceResults.send(message, raceResults.getMessagingLists().get(1));
         verify(clientA, never()).receive(message);
@@ -133,6 +140,7 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void subscriber_WhenSubscribedToMultipleCategories_ShouldReceiveMultipleMessages() {
+        when(clientA.getAge()).thenReturn(20);
         raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
         raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(1));
         raceResults.send(message, raceResults.getMessagingLists().get(0));
@@ -150,9 +158,9 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void notASubscriber_TriesToSubscribe_NothingShouldHappen() {
-        int memberNo = raceResults.getMessagingLists().get(0).size();
-        raceResults.removeSubscriber(clientA, raceResults.getMessagingLists().get(0));
-        Assert.assertSame(memberNo, raceResults.getMessagingLists().get(0));
+        int memberNo = raceResults.getList(0).size();
+        raceResults.removeSubscriber(clientA, raceResults.getList(0));
+        Assert.assertSame(memberNo, raceResults.getList(0).size());
 
     }
 
@@ -162,9 +170,9 @@ public class RaceResultsServiceTest {
     @Test
     public void user_IfYoungerThan18_ShouldNotBeAbleToSubscribe() {
         when(clientA.getAge()).thenReturn(14);
-        int memberNo = raceResults.getMessagingLists().get(0).size();
-        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
-        Assert.assertSame(memberNo, raceResults.getMessagingLists().get(0));
+        int memberNo = raceResults.getList(0).size();
+        raceResults.addSubscriber(clientA, raceResults.getList(0));
+        Assert.assertSame(memberNo, raceResults.getList(0).size());
     }
 
 }
