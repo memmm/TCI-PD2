@@ -2,6 +2,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class RaceResultsServiceTest {
 
@@ -10,5 +11,9 @@ public class RaceResultsServiceTest {
         RaceResultsService raceResults = new RaceResultsService();
         Client client = mock(Client.class);
         Message message = mock(Message.class);
+
+        raceResults.addSubscriber(client);
+        raceResults.send(message);
+        verify(client).receive(message);
     }
 }
