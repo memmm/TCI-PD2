@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * A service whose role is to inform interested parties about the results of races.
  * There is a notification service, which allows clients to subscribe.
@@ -5,11 +8,13 @@
  * */
 public class RaceResultsService {
 
-    private Client client;
+    private Collection<Client> clients = new ArrayList<Client>();
     public void addSubscriber(Client client) {
-        this.client = client;
+        clients.add(client);
     }
     public void send(Message message) {
-        client.receive(message);
+        for (Client client : clients) {
+            client.receive(message);
+        }
     }
 }
