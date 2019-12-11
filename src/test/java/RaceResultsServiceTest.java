@@ -114,7 +114,7 @@ public class RaceResultsServiceTest {
       concentrate on the interactions between the service and its collaborator */
 
     /**
-     * Indirect output (stub) - SUT calls Message's getText() and getDate() getters and passes it to Logger's log() (Indirect input)
+     * Indirect input (stub) - SUT calls Message's getText() and getDate() getters and passes it to Logger's log() (Indirect output)
      */
     @Test
     public void logger_WhenMessageIsSent_ShouldLog() {
@@ -145,7 +145,7 @@ public class RaceResultsServiceTest {
        it, write a test which verifies this behaviour, and make RaceResultsService behave accordingly.*/
 
     /**
-     * Dummy, static test -We assert that the number of clients in the list is the same as it was before the
+     * Dummy, static test - We assert that the number of clients in the list is the same as it was before the
      * unnecessary unsubscription.
      * */
     @Test
@@ -154,6 +154,17 @@ public class RaceResultsServiceTest {
         raceResults.removeSubscriber(clientA, raceResults.getMessagingLists().get(0));
         Assert.assertSame(memberNo, raceResults.getMessagingLists().get(0));
 
+    }
+
+    /**
+     * Indirect input - the age of the user
+     * */
+    @Test
+    public void user_IfYoungerThan18_ShouldNotBeAbleToSubscribe() {
+        when(clientA.getAge()).thenReturn(14);
+        int memberNo = raceResults.getMessagingLists().get(0).size();
+        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
+        Assert.assertSame(memberNo, raceResults.getMessagingLists().get(0));
     }
 
 }
