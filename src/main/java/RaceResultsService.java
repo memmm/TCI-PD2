@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * A service whose role is to inform interested parties about the results of races.
@@ -8,7 +9,8 @@ import java.util.Collection;
  * */
 public class RaceResultsService {
 
-    private Collection<Client> clients = new ArrayList<Client>();
+    private Collection<Client> clients = new HashSet<Client>();
+
     public void addSubscriber(Client client) {
         clients.add(client);
     }

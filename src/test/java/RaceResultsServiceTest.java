@@ -36,7 +36,7 @@ public class RaceResultsServiceTest {
     }
 
     @Test
-    public void shouldSendOnlyOneMessageToMultiSubscriber() {
+    public void multiSubscriber_shouldReceiveOnlyOneMessage() {
         raceResults.addSubscriber(clientA);
         raceResults.addSubscriber(clientA);
         raceResults.send(message);
