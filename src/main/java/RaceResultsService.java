@@ -13,6 +13,7 @@ public class RaceResultsService {
     private Collection<Client> F1MessagingList = new HashSet<Client>();
     private Collection<Client> HorseRaceMessagingList = new HashSet<Client>();
     private Collection<Client> BoatRaceMessagingList = new HashSet<Client>();
+    private static MessageLog msgLog;
 
     public List<HashSet<Client>> getMessagingLists() {
         List lists = new ArrayList<Collection<Client>>();
@@ -26,6 +27,7 @@ public class RaceResultsService {
         list.add(client);
     }
     public void send(Message message, Collection<Client> list) {
+        msgLog.log(message.getText(), message.getDate());
         for (Client client : list) {
             client.receive(message);
         }
