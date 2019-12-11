@@ -19,4 +19,8 @@ public class RaceResultsService {
             client.receive(message);
         }
     }
+
+    public void removeSubscriber(Client client) {
+        clients.remove(client);
+    }
 }
