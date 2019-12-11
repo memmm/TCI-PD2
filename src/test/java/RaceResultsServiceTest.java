@@ -1,7 +1,13 @@
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItem;
 
 public class RaceResultsServiceTest {
 
@@ -69,10 +75,23 @@ public class RaceResultsServiceTest {
       races, F1 races, boat-races, etc. Subscribers should be able to subscribe to selected categories. Make
       sure they receive only messages related to the ones they have signed up for. */
 
-    // Mock object as dummy object
+    /**
+     * static test
+     */
+    @Test
+    public void SUT_ShouldReturnMoreThanZeroLists() {
+
+        Assert.assertNotSame(0,raceResults.getMessagingLists().size());
+    }
+
+    /**
+     *  Dummy object
+     */
     @Test
     public void subscriber_AfterSubscribeToSelectedCategory_ShouldBeOnList() {
-
+        HashSet<Client> list = raceResults.getMessagingLists().get(0);
+        raceResults.addSubscriber(clientA, list);
+        Assert.assertThat(list, hasItem(clientA));
     }
 
     // Indirect output (test spy)
