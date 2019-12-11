@@ -22,7 +22,7 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void notSubscribedClient_ShouldNotReceiveMessage() {
-        raceResults.send(message);
+        raceResults.send(message, raceResults.getMessagingLists().get(0));
         verify(clientA, never()).receive(message);
         verify(clientB, never()).receive(message);
     }
@@ -32,8 +32,8 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void subscribedClient_ShouldReceiveMessage() {
-        raceResults.addSubscriber(clientA);
-        raceResults.send(message);
+        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
+        raceResults.send(message, raceResults.getMessagingLists().get(0));
         verify(clientA).receive(message);
     }
 
@@ -42,9 +42,9 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void allSubscribedClients_ShouldReceiveMessages() {
-        raceResults.addSubscriber(clientA);
-        raceResults.addSubscriber(clientB);
-        raceResults.send(message);
+        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
+        raceResults.addSubscriber(clientB, raceResults.getMessagingLists().get(0));
+        raceResults.send(message, raceResults.getMessagingLists().get(0));
         verify(clientA).receive(message);
         verify(clientB).receive(message);
     }
@@ -54,9 +54,9 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void multiSubscriber_shouldReceiveOnlyOneMessage() {
-        raceResults.addSubscriber(clientA);
-        raceResults.addSubscriber(clientA);
-        raceResults.send(message);
+        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
+        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
+        raceResults.send(message, raceResults.getMessagingLists().get(0));
         verify(clientA).receive(message);
     }
 
@@ -65,9 +65,9 @@ public class RaceResultsServiceTest {
      * */
     @Test
     public void unsubscribedClientShouldNotReceiveMessages() {
-        raceResults.addSubscriber(clientA);
-        raceResults.removeSubscriber(clientA);
-        raceResults.send(message);
+        raceResults.addSubscriber(clientA, raceResults.getMessagingLists().get(0));
+        raceResults.removeSubscriber(clientA, raceResults.getMessagingLists().get(0));
+        raceResults.send(message, raceResults.getMessagingLists().get(0));
         verify(clientA, never()).receive(message);
     }
 
