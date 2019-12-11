@@ -6,23 +6,21 @@ import static org.mockito.Mockito.verify;
 
 public class RaceResultsServiceTest {
 
+    /**
+     * Example from the book (pages 80-84)
+     * */
+    private RaceResultsService raceResults = new RaceResultsService();
+    private Message message = mock(Message.class);
+    private Client clientA = mock(Client.class, "clientA");
+    private Client clientB = mock(Client.class, "clientB");
     @Test
-    public void subscribedClientShouldReceiveMessage() {
-        RaceResultsService raceResults = new RaceResultsService();
-        Client client = mock(Client.class);
-        Message message = mock(Message.class);
-
-        raceResults.addSubscriber(client);
+    public void subscribedClient_ShouldReceiveMessage() {
+        raceResults.addSubscriber(clientA);
         raceResults.send(message);
-        verify(client).receive(message);
+        verify(clientA).receive(message);
     }
-
     @Test
-    public void messageShouldBeSentToAllSubscribedClients() {
-        RaceResultsService raceResults = new RaceResultsService();
-        Client clientA = mock(Client.class, "clientA");
-        Client clientB = mock(Client.class, "clientB");
-        Message message = mock(Message.class);
+    public void allSubscribedClients_ShouldReceiveMessages() {
         raceResults.addSubscriber(clientA);
         raceResults.addSubscriber(clientB);
         raceResults.send(message);
