@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * A service whose role is to inform interested parties about the results of races.
@@ -13,7 +10,17 @@ public class RaceResultsService {
     private Collection<Client> F1MessagingList = new HashSet<Client>();
     private Collection<Client> HorseRaceMessagingList = new HashSet<Client>();
     private Collection<Client> BoatRaceMessagingList = new HashSet<Client>();
-    private static MessageLog msgLog;
+    private MessageLog msgLog;
+
+    public RaceResultsService(MessageLog msgLog) {
+        this.msgLog = msgLog;
+    }
+
+    public Collection<Client> getList(int no) {
+        if (no >= 0 && no <= getMessagingLists().size())
+            return getMessagingLists().get(no);
+        else return null;
+    };
 
     public List<HashSet<Client>> getMessagingLists() {
         List lists = new ArrayList<Collection<Client>>();
@@ -23,9 +30,12 @@ public class RaceResultsService {
         return lists;
     }
 
-    public void addSubscriber(Client client, Collection<Client> list) {
-        list.add(client);
+    public void addSubscriber(Client client, Collection<Client> list)
+    {
+        if (client.getAge() >= 18)
+            list.add(client);
     }
+
     public void send(Message message, Collection<Client> list) {
         msgLog.log(message.getText(), message.getDate());
         for (Client client : list) {

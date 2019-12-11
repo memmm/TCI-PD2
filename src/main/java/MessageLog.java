@@ -1,6 +1,7 @@
 import java.util.Date;
 
-public interface MessageLog {
+public class MessageLog {
 
-    String log(String msg, Date date);
+    public void log(String msg, Date date) {
+    }
 }
